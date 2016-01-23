@@ -1,0 +1,25 @@
+{
+  "name": "check-visual-regressions",
+  "version": "0.0.0",
+  "description": "Checks for visual regressions in between the same named files of given two folders",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Engin Arslan",
+  "license": "ISC",
+  "devDependencies": {
+    "node-resemble-js": "0.0.4",
+    "resemblejs": "^2.0.1"
+  },
+  "dependencies": {
+    "casperjs": "^1.1.0-beta3",
+    "node-resemble-js": "^0.0.4",
+    "phantomjs": "^1.9.19",
+    "resemblejs": "^2.0.1"
+  },
+  "keywords": [
+    "phantomjs",
+    "casperjs"
+  ]
+}
