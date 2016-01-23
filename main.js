@@ -12,38 +12,17 @@ function main(configFile) {
 
 	if (!configFileData.baselineFolder || !configFileData.targetFolder) {
 		if (!configFileData.rootFolder) {
-			console.log('You need to provide at least the baselineFolder and targetFolder or a rootFolder');
+			console.log('You need to provide at the baselineFolder and targetFolder or a rootFolder');
 			return;
 		}
 		var targetDir = configFileData.rootFolder;
-		var targetContent = fs.readdirSync(targetDir);
-		
-		//get folders and their stats for sorting;
-		var results = [];
-		targetContent.forEach(function(item) {
-			
-			var itemPath = targetDir + item;
-			var stat = fs.statSync(itemPath);
-
-			if (stat && stat.isDirectory()) {
-				results.push({"path":itemPath, "stats":stat});
-			}
-		});
-
-		//do the sorting
-		results = results.sort(function(a,b) {
-			return a["stats"]["ctime"] - b["stats"]["ctime"];
-		});
-
-		//isolate to only folder paths
-		var folderResults = results.map(function(folderData) {
-			return folderData["path"];
-		});
-
-		//compare all the files to each other in both folders
-		var twoMostRecentFolders = folderResults.slice(folderResults.length-2, folderResults.length);
-		folderPath_1 = twoMostRecentFolders[0];
-		folderPath_2 = twoMostRecentFolders[1];
+		var folders = getLastTwoSubFolders(targetDir);
+		if (!folders) {
+			console.log('There needs to be two folders inside a given rootFolder for comparison');
+			return false;
+		}
+		folderPath_1 = folders[0];
+		folderPath_2 = folders[1];
 
 	} else {
 		folderPath_1 = configFileData.baselineFolder;
@@ -80,6 +59,49 @@ function main(configFile) {
 			}
 		})
 	});
+
+	function getLastTwoSubFolders(targetDir) {
+		// get the most recent two folders from a given target directory;
+		
+		var targetContent = fs.readdirSync(targetDir);
+		if (targetContent.length === 0) {
+			//empty folder
+			return false;
+		}
+		
+		//get folders inside targetDir and their stats for sorting;
+		var results = [];
+		targetContent.forEach(function(item) {
+			
+			var itemPath = targetDir + item;
+			var stat = fs.statSync(itemPath);
+
+			if (stat && stat.isDirectory()) {
+				results.push({"path":itemPath, "stats":stat});
+			}
+		});
+
+		//do the sorting
+		results = results.sort(function(a,b) {
+			return a["stats"]["ctime"] - b["stats"]["ctime"];
+		});
+
+		//isolate to only folder paths
+		var folderResults = results.map(function(folderData) {
+			return folderData["path"];
+		});
+
+		//need at least two folders inside target Dir for comparison to work
+		if (folderResults.length < 2) {
+			return false;
+		}
+
+		var twoMostRecentFolders = folderResults.slice(folderResults.length-2, folderResults.length);
+		folderPath_1 = twoMostRecentFolders[0];
+		folderPath_2 = twoMostRecentFolders[1];
+
+		return [folderPath_1, folderPath_2];
+	}
 
 	function compare(file_01, file_02, diffFilePath) {
 		console.log('comparing: \n' + file_01 + '\n' + file_02 + '\n');
