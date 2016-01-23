@@ -1,0 +1,7 @@
+images
+node_modules
+.DS_Store
+__demo__*
+npm-debug.log
+output
+output_log.json
