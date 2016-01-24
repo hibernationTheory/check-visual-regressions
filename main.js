@@ -5,7 +5,8 @@
 function main(configFile) {
 	var fs = require('fs');
 	var resemble = require('node-resemble-js');
-	var configFileData = require(configFile);
+	var configFileStr = fs.readFileSync(configFile).toString();
+	var configFileData = JSON.parse(configFileStr);
 	var folderPath_1;
 	var folderPath_2;
 	var mismatchData = [];
@@ -62,7 +63,7 @@ function main(configFile) {
 
 	function getLastTwoSubFolders(targetDir) {
 		// get the most recent two folders from a given target directory;
-		
+
 		var targetContent = fs.readdirSync(targetDir);
 		if (targetContent.length === 0) {
 			//empty folder
